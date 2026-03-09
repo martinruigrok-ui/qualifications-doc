@@ -797,12 +797,13 @@ async function doValidate() {
       date: new Date().toISOString()
     });
 
-    await atPost(TABLE_RESPONSES, {
+    // Non-blocking — UserResponses failure should not block the flow
+    atPost(TABLE_RESPONSES, {
       qualification_id: currentQualif.id,
       user_prenom: prenom,
       status: "validated",
       date: new Date().toISOString()
-    });
+    }).catch(e => console.warn("UserResponses write failed (non-blocking):", e));
 
     globalCovered.add(currentQualif.id);
     userValidated.add(currentQualif.id);
@@ -835,25 +836,17 @@ function doSkip() {
 async function doDontKnow() {
   if (!currentQualif) return;
 
-  showLoading("Enregistrement…");
-  try {
-    await atPost(TABLE_RESPONSES, {
-      qualification_id: currentQualif.id,
-      user_prenom: prenom,
-      status: "dont_know",
-      date: new Date().toISOString()
-    });
+  userDontKnow.add(currentQualif.id);
+  showToast("Noté — cette qualification ne vous sera plus proposée");
+  loadNextQualif();
 
-    userDontKnow.add(currentQualif.id);
-    hideLoading();
-    showToast("Noted — cette qualification ne vous sera plus proposée");
-    loadNextQualif();
-
-  } catch(e) {
-    hideLoading();
-    showToast("❌ Erreur lors de l'enregistrement");
-    console.error(e);
-  }
+  // Fire and forget — non-blocking
+  atPost(TABLE_RESPONSES, {
+    qualification_id: currentQualif.id,
+    user_prenom: prenom,
+    status: "dont_know",
+    date: new Date().toISOString()
+  }).catch(e => console.warn("UserResponses write failed (non-blocking):", e));
 }
 
 // ─────────────────────────────────────────────
