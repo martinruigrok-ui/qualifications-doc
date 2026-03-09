@@ -746,6 +746,7 @@ function pickNextQualif() {
 
 function loadNextQualif() {
   document.getElementById("comment").value = "";
+  document.getElementById("expressions").value = "";
   document.getElementById("btn-validate").disabled = true;
 
   currentQualif = pickNextQualif();
@@ -766,16 +767,21 @@ function loadNextQualif() {
 }
 
 function onCommentInput() {
-  const val = document.getElementById("comment").value.trim();
-  document.getElementById("btn-validate").disabled = val.length === 0;
+  const comment = document.getElementById("comment").value.trim();
+  const expressions = document.getElementById("expressions").value.trim();
+  document.getElementById("btn-validate").disabled = comment.length === 0 || expressions.length === 0;
 }
+
+// also enable/disable on expressions input
+document.getElementById("expressions").addEventListener("input", onCommentInput);
 
 // ─────────────────────────────────────────────
 // ACTIONS
 // ─────────────────────────────────────────────
 async function doValidate() {
   const comment = document.getElementById("comment").value.trim();
-  if (!comment || !currentQualif) return;
+  const expressions = document.getElementById("expressions").value.trim();
+  if (!comment || !expressions || !currentQualif) return;
 
   document.getElementById("btn-validate").disabled = true;
   showLoading("Enregistrement…");
@@ -786,6 +792,7 @@ async function doValidate() {
       qualification_label: currentQualif.label,
       user_prenom: prenom,
       commentaire: comment,
+      formulations_client: expressions,
       status: "validated",
       date: new Date().toISOString()
     });
