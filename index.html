@@ -582,10 +582,9 @@
 // ─────────────────────────────────────────────
 // CONFIG — à remplir après création de la base Airtable
 // ─────────────────────────────────────────────
-const AIRTABLE_TOKEN = "patEaqk7VUNgqdaXP.c83a6d533c53ca15a4f796e27eb9fefc6297fcebce098e4718d1ba9ab33588e9";    // Personal Access Token Airtable
-const BASE_ID        = "appDSXTUduLIP4eMf";            // ID de votre base
-const TABLE_QUALIFS  = "Qualifications";
-const TABLE_CONTRIBS = "Contributions";
+// ── Proxy Netlify — plus de token exposé ──
+const TABLE_QUALIFS   = "Qualifications";
+const TABLE_CONTRIBS  = "Contributions";
 const TABLE_RESPONSES = "UserResponses";
 
 // ─────────────────────────────────────────────
@@ -608,43 +607,38 @@ let userValidated  = new Set(); // quali_ids validés par cet user
 let recentlySkipped = [];       // queue de max 5 qualifs passées récemment
 
 // ─────────────────────────────────────────────
-// AIRTABLE HELPERS
+// PROXY HELPERS (via Netlify — pas d'appel direct Airtable)
 // ─────────────────────────────────────────────
-const AT_HEADERS = {
-  "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
-  "Content-Type": "application/json"
-};
-
 async function atGet(table, params = "") {
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}${params}`;
-  const r = await fetch(url, { headers: AT_HEADERS });
-  if (!r.ok) throw new Error(`Airtable GET error: ${r.status}`);
+  const url = `/api/${encodeURIComponent(table)}${params}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`Proxy GET error: ${r.status}`);
   return r.json();
 }
 
 async function atPost(table, fields) {
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}`;
+  const url = `/api/${encodeURIComponent(table)}`;
   const r = await fetch(url, {
     method: "POST",
-    headers: AT_HEADERS,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ fields })
   });
-  if (!r.ok) throw new Error(`Airtable POST error: ${r.status}`);
+  if (!r.ok) throw new Error(`Proxy POST error: ${r.status}`);
   return r.json();
 }
 
 async function atPatch(table, recordId, fields) {
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}/${recordId}`;
+  const url = `/api/${encodeURIComponent(table)}/${recordId}`;
   const r = await fetch(url, {
     method: "PATCH",
-    headers: AT_HEADERS,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ fields })
   });
-  if (!r.ok) throw new Error(`Airtable PATCH error: ${r.status}`);
+  if (!r.ok) throw new Error(`Proxy PATCH error: ${r.status}`);
   return r.json();
 }
 
-// Pagination Airtable
+// Pagination
 async function atGetAll(table, filterFormula = "") {
   let records = [];
   let offset = null;
