@@ -532,8 +532,14 @@
     <h1>Documenter les qualifications</h1>
     <p>Aidez-nous à décrire les qualifications utilisées dans les tickets clients. Votre expertise opérationnelle est précieuse.</p>
     <div class="input-group">
-      <label>Votre prénom</label>
-      <input type="text" id="input-prenom" placeholder="Ex : Sophie" autocomplete="given-name" />
+      <label>Votre adresse email SFR</label>
+      <div style="display:flex; align-items:center; background:#F7F6F3; border:1.5px solid #E8E6E0; border-radius:10px; overflow:hidden; transition: border-color 0.2s;">
+        <input type="text" id="input-prenom" placeholder="prenom.nom" autocomplete="email"
+          style="flex:1; border:none; background:transparent; padding:14px 12px; font-size:16px; font-family:inherit; outline:none; color:#1A1916; min-width:0;"
+          onfocus="this.parentElement.style.borderColor='#C8451A'"
+          onblur="this.parentElement.style.borderColor='#E8E6E0'" />
+        <span style="padding:14px 14px 14px 4px; font-size:15px; color:#6B6860; white-space:nowrap; user-select:none;">@sfr.com</span>
+      </div>
     </div>
     <button class="btn-start" id="btn-start" disabled onclick="startSession()">Commencer →</button>
   </div>
@@ -676,7 +682,9 @@ async function atGetAll(table, filterFormula = "") {
 // INIT
 // ─────────────────────────────────────────────
 document.getElementById("input-prenom").addEventListener("input", function() {
-  document.getElementById("btn-start").disabled = this.value.trim().length < 2;
+  const val = this.value.trim();
+  const valid = val.length >= 2 && /^[a-zA-ZÀ-ÿ0-9._-]+$/.test(val);
+  document.getElementById("btn-start").disabled = !valid;
 });
 
 document.getElementById("input-prenom").addEventListener("keydown", function(e) {
@@ -684,8 +692,8 @@ document.getElementById("input-prenom").addEventListener("keydown", function(e) 
 });
 
 async function startSession() {
-  prenom = document.getElementById("input-prenom").value.trim();
-  userId = prenom.toLowerCase().replace(/\s+/g, "_") + "_" + Math.random().toString(36).slice(2,7);
+  prenom = document.getElementById("input-prenom").value.trim().toLowerCase();
+  userId = prenom + "_" + Math.random().toString(36).slice(2,7);
 
   // Check if same prenom already used (simple approach: reuse)
   showLoading("Chargement des données…");
