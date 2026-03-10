@@ -67,6 +67,21 @@
     color: var(--text);
   }
 
+  .header-guide {
+    font-size: 12px;
+    font-weight: 600;
+    color: #B83318;
+    background: #FDECEA;
+    padding: 5px 13px;
+    border-radius: 100px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .header-guide:hover { background: #FAD9D4; color: #9A2810; }
+
   /* Progress */
   .progress-wrap {
     width: 100%;
@@ -508,8 +523,9 @@
 
 <!-- Welcome screen -->
 <div class="screen active" id="screen-welcome">
-  <div style="text-align:center; margin-bottom: 40px;">
+  <div style="text-align:center; margin-bottom: 40px; display:flex; justify-content:space-between; align-items:center;">
     <div style="font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-soft);">Qualifications · Documentation</div>
+    <a class="header-guide" href="https://qualifications-diabolo.netlify.app/guide-qualifications.html" target="_blank">? Guide</a>
   </div>
   <div class="welcome-card">
     <div class="welcome-icon">📋</div>
@@ -527,7 +543,10 @@
 <div class="screen" id="screen-main">
   <div class="header">
     <div class="header-brand">Qualifications</div>
-    <div class="header-user">👤 <span id="display-prenom"></span></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a class="header-guide" href="https://qualifications-diabolo.netlify.app/guide-qualifications.html" target="_blank">? Guide</a>
+      <div class="header-user">👤 <span id="display-prenom"></span></div>
+    </div>
   </div>
 
   <div class="progress-wrap">
