@@ -482,30 +482,6 @@
     line-height: 1.6;
   }
 
-  /* Stats bar */
-  .stats-bar {
-    width: 100%;
-    max-width: 680px;
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .stat-pill {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-soft);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 6px 14px;
-    border-radius: 100px;
-  }
-
-  .stat-pill strong {
-    color: var(--accent);
-    font-weight: 600;
-  }
-
   /* Loading */
   .loading-overlay {
     position: fixed;
@@ -591,7 +567,7 @@
     </div>
   </div>
 
-  <div class="progress-wrap">
+  <div class="progress-wrap" style="margin-bottom:20px;">
     <div class="progress-label">
       <span>Progression globale</span>
       <span id="progress-text">0 / 637 renseignées</span>
@@ -602,11 +578,6 @@
   <div class="famille-filter-wrap" id="famille-filter-wrap" style="display:none;">
     <div class="famille-filter-label">Filtrez la ou les familles à vous proposer</div>
     <div class="famille-pills" id="famille-pills"></div>
-  </div>
-
-  <div class="stats-bar">
-    <div class="stat-pill">Session : <strong id="stat-session">0</strong> validées</div>
-    <div class="stat-pill">Vous avez passé : <strong id="stat-skipped">0</strong></div>
   </div>
 
   <div class="card" id="main-card">
@@ -774,7 +745,7 @@ async function startSession() {
 async function loadFamilles() {
   try {
     const records = await atGetAll("Qualifications", `{Famille} != ""`);
-    const familles = [...new Set(records.map(r => r.fields.Famille).filter(Boolean))].sort();
+    const familles = [...new Set(records.map(r => r.fields.Famille).filter(f => f && f !== "Famille"))].sort();
 
     // Update QUALIFICATIONS with famille data
     records.forEach(r => {
